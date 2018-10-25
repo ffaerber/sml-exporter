@@ -1,0 +1,9 @@
+version: "3.6"
+
+services:
+  sml-exporter:
+    build:
+      context: .
+    restart: always
+    devices:
+      - "/dev/ttyUSB0"
