@@ -1,9 +1,25 @@
 version: "3.6"
 
+volumes:
+  redis_db:
+    driver: local
+
 services:
-  app:
+  reader:
     build:
       context: .
+    command: node reader/index.js
     restart: always
     devices:
       - "/dev/ttyUSB0"
+    environment:
+      - REDIS_HOST=redis://redis
+  server:
+    build:
+      context: .
+    command: node server/index.js
+    restart: always
+  redis:
+    image: redis
+    volumes:
+      - redis_db:/data
