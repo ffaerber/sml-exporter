@@ -1,11 +1,12 @@
 "use strict";
+//require('dotenv').config()
 const SerialPort = require("serialport");
 const Readline = require("@serialport/parser-readline");
 const Reading = require("../libs/Reading");
 
 const redis = require("redis");
-const client = redis.createClient();
-client.on("error", console.error);
+const redisClient = redis.createClient(process.env.REDIS_HOST);
+redisClient.on("error", console.error);
 
 let port = new SerialPort("/dev/ttyUSB0", {
   dataBits: 7
@@ -25,7 +26,7 @@ parser.on("data", function(data) {
       energyBMilliwattHour: reading.energyBMilliwattHour,
       powerAMilliwatt: reading.powerAMilliwatt,
       powerBMilliwatt: reading.powerBMilliwatt
-    };
-    client.set("key", "value!", "EX", 10);
+    }
+    redisClient.set(Date.now(), JSON.stringify(r), "EX", 60);
   }
 });
