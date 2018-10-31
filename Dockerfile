@@ -1,22 +1,36 @@
-FROM resin/rpi-raspbian:jessie
-MAINTAINER Felix Faerber <ffaerber@gmail.com>
+ARG QEMU
+ARG NPM_OPTIONS
+ARG BASE_IMAGE=amd64/debian:stretch-slim
+FROM ${BASE_IMAGE}
 
-RUN apt-get update -qq && apt-get install vim wget
-RUN wget https://nodejs.org/dist/v11.0.0/node-v11.0.0-linux-armv7l.tar.gz --no-check-certificate
-RUN tar -xvf node-v11.0.0-linux-armv7l.tar.gz
-RUN cp -R node-v11.0.0-linux-armv7l/. /usr/local/
+ADD ${QEMU} /usr/bin/${QEMU}
 
-# Create app directory
+RUN apt-get update && \
+  apt-get install -y \
+  vim \
+  gnupg \
+  node-gyp \
+  iputils-ping \
+  curl
+
+RUN curl -sL https://deb.nodesource.com/setup_11.x | sh
+RUN apt-get install -y nodejs
+
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # Install app dependencies
 COPY package.json /usr/src/app/
-RUN apt-get install -y build-essential node-gyp iputils-ping
-RUN npm install
+
+RUN npm install ${NPM_OPTIONS}
+RUN npm dedupe
 
 # Bundle app source
 COPY . /usr/src/app
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=10s --timeout=3s \
+  CMD curl -f http://localhost:3000/metrics || exit 1
+
 CMD [ "node", "server/index.js" ]

@@ -17,16 +17,20 @@ const parser = port.pipe(
   })
 );
 
-parser.on("data", function(data) {
+parser.on("data", function (data) {
   let reading = new Reading(data);
   if (reading.valid()) {
+    let timestamp = Date.now()
+    let meterSerialnumber = reading.meterSerialnumber
     let r = {
-      meterSerialnumber: reading.meterSerialnumber,
+      timestamp,
+      meterSerialnumber,
       energyAMilliwattHour: reading.energyAMilliwattHour,
       energyBMilliwattHour: reading.energyBMilliwattHour,
       powerAMilliwatt: reading.powerAMilliwatt,
       powerBMilliwatt: reading.powerBMilliwatt
     }
-    redisClient.set(Date.now(), JSON.stringify(r), "EX", 60);
+    redisClient.sadd("meters", meterSerialnumber);
+    redisClient.zadd([meterSerialnumber, timestamp, JSON.stringify(r)]);
   }
 });

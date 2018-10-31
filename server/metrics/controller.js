@@ -1,8 +1,3 @@
-// app.get('/metrics', (req, res) => {
-//   res.set('Content-Type', Prometheus.register.contentType)
-//   res.end(Prometheus.register.metrics())
-// })
-
 const Prometheus = require('prom-client')
 
 const show = async ctx => {
@@ -12,4 +7,6 @@ const show = async ctx => {
   ctx.body = metrics
 }
 
-module.exports = { show }
+module.exports = {
+  show
+}
