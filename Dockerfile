@@ -1,6 +1,6 @@
 ARG QEMU
 ARG NPM_OPTIONS
-ARG BASE_IMAGE=amd64/debian:stretch-slim
+ARG BASE_IMAGE=amd64/debian:9.5-slim
 FROM ${BASE_IMAGE}
 
 ADD ${QEMU} /usr/bin/${QEMU}

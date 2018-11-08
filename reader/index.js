@@ -1,12 +1,8 @@
 "use strict";
-//require('dotenv').config()
+const prom = require('prom-client');
 const SerialPort = require("serialport");
 const Readline = require("@serialport/parser-readline");
 const Reading = require("../libs/Reading");
-
-const redis = require("redis");
-const redisClient = redis.createClient(process.env.REDIS_HOST);
-redisClient.on("error", console.error);
 
 let port = new SerialPort("/dev/ttyUSB0", {
   dataBits: 7
@@ -16,6 +12,11 @@ const parser = port.pipe(
     delimiter: "!"
   })
 );
+
+const gauge = new prom.Gauge({
+  name: 'gauge_name',
+  help: 'gauge_help'
+});
 
 parser.on("data", function (data) {
   let reading = new Reading(data);
@@ -30,7 +31,6 @@ parser.on("data", function (data) {
       powerAMilliwatt: reading.powerAMilliwatt,
       powerBMilliwatt: reading.powerBMilliwatt
     }
-    redisClient.sadd("meters", meterSerialnumber);
-    redisClient.zadd([meterSerialnumber, timestamp, JSON.stringify(r)]);
+    gauge.set(reading.energyAMilliwattHour, timestamp)
   }
 });

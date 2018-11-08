@@ -1,18 +1,5 @@
-const Koa = require('koa')
-const app = new Koa()
-const metrics = require('./metrics/route')
-const meters = require('./meters/route')
-const bodyparser = require('koa-bodyparser')
-const prometheus = require('../middlewares/prometheus')
+const app = require('./app')
 
-app
-  .use(prometheus())
-  .use(bodyparser())
-  .use(meters.routes())
-  .use(metrics.routes())
-
-const server = app.listen(3000).on('error', err => {
-  console.error(err)
-})
-
-module.exports = server
+const port = process.env.PORT || 3000;
+const server = app.listen(port);
+console.info(`Listening to http://localhost:${port} 🚀`);

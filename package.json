@@ -4,7 +4,7 @@
   "main": "server/index.js",
   "scripts": {
     "start": "nodemon --exec node server/index.js",
-    "test": "node_modules/.bin/nodemon -L --exec 'node_modules/.bin/standard --fix && jest --forceExit'"
+    "test": "node_modules/.bin/nodemon -L --exec 'jest --forceExit'"
   },
   "jest": {
     "testEnvironment": "node"
@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "6.1.0",
+    "ioredis": "^4.2.0",
     "koa": "^2.6.1",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
