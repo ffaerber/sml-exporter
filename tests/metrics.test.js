@@ -9,8 +9,8 @@ beforeAll(() => {
     name: 'gauge_name',
     help: 'gauge_help'
   });
-  gauge.set(1000, 1234324)
-  gauge.set(2000, 1234326)
+  gauge.set(1234086686, 1541689793370)
+  gauge.set(1234086779, 1541689795371)
 })
 
 describe('metrics', () => {
