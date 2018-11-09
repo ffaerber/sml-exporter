@@ -25,7 +25,7 @@ mqtt.on('connect', function () {
     if (reading.valid()) {
       const meterName = `${reading.meterSerialnumber}_${reading.manufacturerName}`
       const r = {
-        timestamp: Date.now()
+        timestamp: Date.now(),
         energyAMilliwattHour: reading.energyAMilliwattHour,
         energyBMilliwattHour: reading.energyBMilliwattHour,
         powerAMilliwatt: reading.powerAMilliwatt,
