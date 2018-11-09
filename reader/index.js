@@ -18,30 +18,21 @@ const parser = port.pipe(
   })
 )
 
-let meterSerialnumber = null
 
 mqtt.on('connect', function () {
   parser.on("data", function (data) {
     const reading = new Reading(data);
     if (reading.valid()) {
-      const timestamp = Date.now()
-      meterSerialnumber = reading.meterSerialnumber
+      const meterName = `${reading.meterSerialnumber}_${reading.manufacturerName}`
       const r = {
-        timestamp,
-        meterSerialnumber,
+        timestamp: Date.now()
         energyAMilliwattHour: reading.energyAMilliwattHour,
         energyBMilliwattHour: reading.energyBMilliwattHour,
         powerAMilliwatt: reading.powerAMilliwatt,
         powerBMilliwatt: reading.powerBMilliwatt
       }
-      if (meterSerialnumber !== null) {
-        mqtt.subscribe(meterSerialnumber)
-      }
-
-
-
-      redis.sadd("meters", meterSerialnumber);
-      mqtt.publish(meterSerialnumber, r)
+      redis.sadd("meters", meterName);
+      mqtt.publish(meterName, r)
     }
   })
 })
