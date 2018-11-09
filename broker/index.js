@@ -1,4 +1,5 @@
 const mosca = require('mosca')
+const request = require('request');
 
 var pubsubsettings = {
   type: 'redis',
@@ -14,10 +15,25 @@ var moscaSettings = {
   backend: pubsubsettings //pubsubsettings is the object we created above
 };
 
-var server = new mosca.Server(moscaSettings); //here we start mosca
-server.on('ready', setup); //on init it fires up setup()
 
-// fired when the mqtt server is ready
-function setup() {
+var server = new mosca.Server(moscaSettings); //here we start mosca
+
+server.on('clientConnected', (client) => {
+  console.log('client connected', client.id);
+});
+
+// fired when a message is received
+server.on('published', (packet, client) => {
+
+  var options = {
+    uri: process.env.KOA_HOST,
+    method: 'POST',
+    json: true,
+    body: packet.payload
+  }
+  request(options, console.log)
+});
+
+server.on('ready', () => {
   console.log('Mosca server is up and running')
-}
+});

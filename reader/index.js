@@ -31,7 +31,6 @@ mqtt.on('connect', function () {
         powerAMilliwatt: reading.powerAMilliwatt,
         powerBMilliwatt: reading.powerBMilliwatt
       }
-	    console.log(meterName)
       redis.sadd("meters", meterName);
       mqtt.publish(meterName, JSON.stringify(r))
     }

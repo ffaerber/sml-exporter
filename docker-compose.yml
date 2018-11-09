@@ -30,29 +30,31 @@ services:
       - "1883:1883"
     environment:
       REDIS_HOST: redis
+      KOA_HOST: http://koa
     volumes:
       - node_modules:/usr/src/app/node_modules
       - ./:/usr/src/app
 
-  # server:
-  #   build:
-  #     context: .
-  #   command: node server/index.js
-  #   ports:
-  #     - "3000:3000"
-  #   restart: always
-  #   environment:
-  #     - REDIS_HOST=redis://redis
-  #   volumes:
-  #     - node_modules:/usr/src/app/node_modules
-  #     - ./:/usr/src/app
+  koa:
+    build:
+      context: .
+    command: node koa/index.js
+    ports:
+      - "80:3000"
+    restart: always
+    environment:
+      REDIS_HOST: redis://redis
+      MQTT_BROKER_HOST: mqtt://easymeter.local
+    volumes:
+      - node_modules:/usr/src/app/node_modules
+      - ./:/usr/src/app
 
-  # server-test:
+  # koa-test:
   #   build:
   #     context: .
   #   command: npm test
   #   environment:
-  #     - REDIS_HOST=redis://redis
+  #     REDIS_HOST: redis://redis
   #   volumes:
   #     - node_modules:/usr/src/app/node_modules
   #     - ./:/usr/src/app

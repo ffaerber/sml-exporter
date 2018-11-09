@@ -1,29 +1,30 @@
 /* global describe, test, expect, afterAll */
 const prom = require('prom-client')
 const supertest = require('supertest')
-const app = require('../server/app')
-
-
-beforeAll(() => {
-  const gauge = new prom.Gauge({
-    name: 'gauge_name',
-    help: 'gauge_help'
-  });
-  gauge.set(1234086686, 1541689793370)
-  gauge.set(1234086779, 1541689795371)
-})
+const app = require('../koa/app')
 
 describe('metrics', () => {
+
+  test('should create correct metrics', async () => {
+
+    const params = {
+      timestamp: 1541773720561,
+      energyAMilliwattHour: 100,
+      energyBMilliwattHour: 0,
+      powerAMilliwatt: 500000,
+      powerBMilliwatt: 0
+    }
+    const res = await supertest(app.callback()).post('/metrics').send(params)
+    expect(res.status).toEqual(201)
+    //expect(res.body.res).toEqual("post")
+  })
 
   test('should get correct metrics', async () => {
     const res = await supertest(app.callback()).get('/metrics')
     expect(res.status).toEqual(200)
-
-    const res2 = await supertest(app.callback()).get('/metrics')
-    expect(res2.status).toEqual(200)
-
     // expect(res.body.res).toEqual("The test article's body")
   })
+
 
   afterAll(() => {
     server.close()
