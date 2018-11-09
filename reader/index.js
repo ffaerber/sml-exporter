@@ -23,7 +23,7 @@ mqtt.on('connect', function () {
   parser.on("data", function (data) {
     const reading = new Reading(data);
     if (reading.valid()) {
-      const meterName = `${reading.meterSerialnumber}_${reading.manufacturerName}`
+      const meterName = `${reading.manufacturerName}_${reading.meterSerialnumber}`
       const r = {
         timestamp: Date.now(),
         energyAMilliwattHour: reading.energyAMilliwattHour,
@@ -31,8 +31,9 @@ mqtt.on('connect', function () {
         powerAMilliwatt: reading.powerAMilliwatt,
         powerBMilliwatt: reading.powerBMilliwatt
       }
+	    console.log(meterName)
       redis.sadd("meters", meterName);
-      mqtt.publish(meterName, r)
+      mqtt.publish(meterName, JSON.stringify(r))
     }
   })
 })
