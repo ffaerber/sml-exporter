@@ -16,7 +16,7 @@ services:
       - "/dev/ttyUSB0"
     environment:
       REDIS_HOST: redis://redis
-      MQTT_BROKER_HOST: broker
+      MQTT_BROKER_HOST: mqtt://broker
     volumes:
       - node_modules:/usr/src/app/node_modules
       - ./:/usr/src/app

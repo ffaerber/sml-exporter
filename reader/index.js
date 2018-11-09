@@ -1,15 +1,14 @@
 "use strict";
-const mqtt = require('mqtt')
+const Redis = require('ioredis');
+const MQTT = require('mqtt')
 const SerialPort = require("serialport");
 const Readline = require("@serialport/parser-readline");
 const Reading = require("../libs/Reading");
 
-const Redis = require('ioredis');
-const redisClient = new Redis(process.env.REDIS_HOST);
+const redis = new Redis(process.env.REDIS_HOST);
+const mqtt = MQTT.connect(process.env.MQTT_BROKER_HOST)
 
-const mqttClient = mqtt.connect(process.env.MQTT_BROKER_HOST)
-
-let port = new SerialPort("/dev/ttyUSB0", {
+const port = new SerialPort("/dev/ttyUSB0", {
   dataBits: 7
 })
 
@@ -19,15 +18,15 @@ const parser = port.pipe(
   })
 )
 
-mqttClient.on('connect', function () {
-  mqttClient.subscribe(process.env.MQTT_TOPIC)
+let meterSerialnumber = null
 
+mqtt.on('connect', function () {
   parser.on("data", function (data) {
-    let reading = new Reading(data);
+    const reading = new Reading(data);
     if (reading.valid()) {
-      let timestamp = Date.now()
-      let meterSerialnumber = reading.meterSerialnumber
-      let r = {
+      const timestamp = Date.now()
+      meterSerialnumber = reading.meterSerialnumber
+      const r = {
         timestamp,
         meterSerialnumber,
         energyAMilliwattHour: reading.energyAMilliwattHour,
@@ -35,8 +34,14 @@ mqttClient.on('connect', function () {
         powerAMilliwatt: reading.powerAMilliwatt,
         powerBMilliwatt: reading.powerBMilliwatt
       }
-      redisClient.sadd("meters", meterSerialnumber);
-      mqttClient.publish(meterSerialnumber, r)
+      if (meterSerialnumber !== null) {
+        mqtt.subscribe(meterSerialnumber)
+      }
+
+
+
+      redis.sadd("meters", meterSerialnumber);
+      mqtt.publish(meterSerialnumber, r)
     }
   })
 })
