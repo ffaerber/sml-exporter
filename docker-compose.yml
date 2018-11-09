@@ -30,6 +30,9 @@ services:
       - "1883:1883"
     environment:
       REDIS_HOST: redis
+    volumes:
+      - node_modules:/usr/src/app/node_modules
+      - ./:/usr/src/app
 
   # server:
   #   build:
