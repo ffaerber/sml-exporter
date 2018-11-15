@@ -1,5 +1,10 @@
 const mosca = require('mosca')
 const request = require('request');
+const {
+  StringDecoder
+} = require('string_decoder');
+
+const decoder = new StringDecoder('utf8');
 
 var pubsubsettings = {
   type: 'redis',
@@ -29,7 +34,7 @@ server.on('published', (packet, client) => {
     uri: process.env.KOA_HOST,
     method: 'POST',
     json: true,
-    body: packet.payload
+    body: JSON.parse(decoder.write(packet.payload))
   }
   request(options, console.log)
 });
@@ -37,3 +42,17 @@ server.on('published', (packet, client) => {
 server.on('ready', () => {
   console.log('Mosca server is up and running')
 });
+
+
+request.post('http://koa:3000/metrics', {
+  json: {
+    todo: 'Buy the milk'
+  }
+}, (error, res, body) => {
+  if (error) {
+    console.error(error)
+    return
+  }
+  console.log(`statusCode: ${res.statusCode}`)
+  console.log(body)
+})
