@@ -24,9 +24,9 @@ parser.on("data", function (data) {
       powerAMilliwatt: reading.powerAMilliwatt,
       powerBMilliwatt: reading.powerBMilliwatt
     }
-
-    axios.post('/meters', JSON.stringify(r))
-      .then(console.log)
+    console.log(r)
+    axios.post('http://koa:3000/metrics', r)
+      .then(console.log('ok'))
       .catch(console.error)
   }
 })

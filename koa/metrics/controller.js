@@ -29,7 +29,6 @@ const show = async ctx => {
 }
 
 const create = async ctx => {
-
   const {
     timestamp,
     energyAMilliwattHour,
